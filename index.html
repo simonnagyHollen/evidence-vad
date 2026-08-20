@@ -260,6 +260,7 @@ p{
   border-radius:50%;
   display:grid;
   place-items:center;
+  cursor:pointer;
 }
 
 .counter{
@@ -490,12 +491,6 @@ p{
   padding:10px 12px;
 }
 
-.danger{
-  color:#b22f42 !important;
-  border-color:#f1cbd2 !important;
-  background:#fff8f9 !important;
-}
-
 .empty{
   text-align:center;
   padding:32px 10px;
@@ -571,19 +566,6 @@ input[type=file]{
   border-radius:12px;
   padding:10px 12px;
   margin-bottom:12px;
-}
-
-@media(min-width:760px){
-
-  main{
-    padding:25px;
-  }
-
-  .operatorWrap{
-    max-width:460px;
-    margin:auto;
-  }
-
 }
 
 /* LOGIN */
@@ -680,17 +662,28 @@ input[type=file]{
   color:#fff;
 }
 
+@media(min-width:760px){
+
+  main{
+    padding:25px;
+  }
+
+  .operatorWrap{
+    max-width:460px;
+    margin:auto;
+  }
+
+}
+
 </style>
 
+<!-- DŮLEŽITÉ: ČISTÁ URL, ŽÁDNÉ MARKDOWN ODKAZY -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 </head>
-
 
 <body>
 
@@ -701,7 +694,7 @@ input[type=file]{
   <div class="bar">
 
     <div class="logo">
-      <img src="hollen-logo.jpg">
+      <img src="hollen-logo.jpg" alt="HOLLEN">
     </div>
 
     <span id="status" class="status">
@@ -718,17 +711,11 @@ input[type=file]{
 
   <div class="tabs">
 
-    <button
-      class="tab active"
-      data-tab="operator"
-    >
+    <button class="tab active" data-tab="operator">
       📱 Operátor
     </button>
 
-    <button
-      class="tab"
-      data-tab="admin"
-    >
+    <button class="tab" data-tab="admin">
       🖥️ Admin
     </button>
 
@@ -736,58 +723,35 @@ input[type=file]{
 
 </header>
 
-
 <main>
-
 
 <!-- OPERÁTOR -->
 
-<section
-  id="operator"
-  class="screen active"
->
+<section id="operator" class="screen active">
 
 <div class="operatorWrap">
 
+<div id="opStart" class="card hero">
 
-<div
-  id="opStart"
-  class="card hero"
->
+  <div class="heroIcon">📷</div>
 
-  <div class="heroIcon">
-    📷
-  </div>
-
-  <h2>
-    Připraven na další díl?
-  </h2>
+  <h2>Připraven na další díl?</h2>
 
   <p>
     Začni fotografií štítku. Potom jednoduše přidej všechny fotografie vad.
   </p>
 
-  <button
-    class="big"
-    onclick="startNew()"
-  >
+  <button class="big" onclick="startNew()">
     NOVÝ DÍL
   </button>
 
 </div>
 
-
-
-<div
-  id="opLabel"
-  class="card hidden"
->
+<div id="opLabel" class="card hidden">
 
   <div class="stepTitle">
 
-    <span class="n">
-      1
-    </span>
+    <span class="n">1</span>
 
     Vyfoť štítek dílu
 
@@ -797,10 +761,7 @@ input[type=file]{
     Jedna fotografie identifikuje celou sadu.
   </p>
 
-  <label
-    class="big"
-    for="labelInput"
-  >
+  <label class="big" for="labelInput">
     📷 OTEVŘÍT FOTOAPARÁT
   </label>
 
@@ -811,10 +772,7 @@ input[type=file]{
     capture="environment"
   >
 
-  <div
-    id="labelPrev"
-    class="preview"
-  >
+  <div id="labelPrev" class="preview">
     Čekám na fotografii štítku
   </div>
 
@@ -828,18 +786,11 @@ input[type=file]{
 
 </div>
 
-
-
-<div
-  id="opDefects"
-  class="card hidden"
->
+<div id="opDefects" class="card hidden">
 
   <div class="stepTitle">
 
-    <span class="n">
-      2
-    </span>
+    <span class="n">2</span>
 
     Vyfoť vady
 
@@ -849,10 +800,7 @@ input[type=file]{
     Fotografuj jednu po druhé. Až bude hotovo, ulož celou sadu.
   </p>
 
-  <label
-    class="big"
-    for="defectInput"
-  >
+  <label class="big" for="defectInput">
     📸 VYFOTIT VADU
   </label>
 
@@ -863,48 +811,30 @@ input[type=file]{
     capture="environment"
   >
 
-  <div
-    id="defCount"
-    class="counter"
-  >
+  <div id="defCount" class="counter">
     Vyfoceno: 0
   </div>
 
-  <div
-    id="defGallery"
-    class="gallery"
-  ></div>
+  <div id="defGallery" class="gallery"></div>
 
-  <button
-    class="secondary"
-    onclick="finishSet()"
-  >
+  <button class="secondary" onclick="finishSet()">
     ✓ HOTOVO – ULOŽIT DÍL
   </button>
 
 </div>
-
 
 </div>
 
 </section>
 
 
-
 <!-- ADMIN -->
 
-<section
-  id="admin"
-  class="screen"
->
+<section id="admin" class="screen">
 
-<div
-  id="cloudHint"
-  class="cloudbox"
->
-  ☁ Aplikace je připojena ke cloudové databázi.
+<div id="cloudHint" class="cloudbox">
+  ☁ Připojuji aplikaci ke cloudové databázi...
 </div>
-
 
 <div class="card">
 
@@ -912,9 +842,7 @@ input[type=file]{
 
     <div>
 
-      <h2>
-        Admin přehled
-      </h2>
+      <h2>Admin přehled</h2>
 
       <p>
         Procházej jednotlivé sady, otevírej fotografie,
@@ -929,14 +857,12 @@ input[type=file]{
 
   </div>
 
-
   <input
     id="searchRecords"
     class="search"
     placeholder="🔎 Hledat podle data nebo ID záznamu…"
     oninput="filterRecords()"
   >
-
 
   <div class="tools">
 
@@ -956,29 +882,21 @@ input[type=file]{
 
 </div>
 
-
-
 <div class="card">
 
   <div class="stepTitle">
     📋 Nafocené díly
   </div>
 
-  <div
-    id="records"
-    class="adminGrid"
-  ></div>
+  <div id="records" class="adminGrid"></div>
 
 </div>
 
-
 </section>
-
 
 </main>
 
 </div>
-
 
 
 <!-- ADMIN LOGIN -->
@@ -992,15 +910,10 @@ input[type=file]{
 <div class="loginBox">
 
   <div class="loginLogo">
-    <img
-      src="hollen-logo.jpg"
-      alt="HOLLEN"
-    >
+    <img src="hollen-logo.jpg" alt="HOLLEN">
   </div>
 
-  <h2>
-    Admin přístup
-  </h2>
+  <h2>Admin přístup</h2>
 
   <p>
     Pro otevření administrace zadej heslo.
@@ -1013,13 +926,9 @@ input[type=file]{
     autocomplete="current-password"
   >
 
-  <div
-    id="loginError"
-    class="loginError"
-  >
+  <div id="loginError" class="loginError">
     Nesprávné heslo. Zkus to znovu.
   </div>
-
 
   <div class="loginActions">
 
@@ -1044,21 +953,15 @@ input[type=file]{
 </div>
 
 
-
 <!-- DETAIL -->
 
-<div
-  id="modal"
-  class="modal"
->
+<div id="modal" class="modal">
 
 <div class="sheet">
 
   <div class="sheetTop">
 
-    <h2>
-      Detail záznamu
-    </h2>
+    <h2>Detail záznamu</h2>
 
     <button
       class="close"
@@ -1076,13 +979,9 @@ input[type=file]{
 </div>
 
 
-
 <!-- IMAGE VIEWER -->
 
-<div
-  id="imageViewer"
-  class="imageViewer"
->
+<div id="imageViewer" class="imageViewer">
 
 <div class="viewerTools">
 
@@ -1096,7 +995,7 @@ input[type=file]{
 
 </div>
 
-<img id="viewerImg">
+<img id="viewerImg" alt="Fotografie">
 
 <div
   id="viewerCaption"
@@ -1106,14 +1005,9 @@ input[type=file]{
 </div>
 
 
-
 <!-- TOAST -->
 
-<div
-  id="toast"
-  class="toast"
-></div>
-
+<div id="toast" class="toast"></div>
 
 
 <script>
@@ -1129,11 +1023,40 @@ const HOLLEN_SUPABASE_KEY =
   'sb_publishable_mxjdNgaBJ17D4UpR34x3cw_8OhKginI';
 
 
-const supabase =
-  window.supabase.createClient(
-    HOLLEN_SUPABASE_URL,
-    HOLLEN_SUPABASE_KEY
+/* =========================================================
+   VYTVOŘENÍ SUPABASE CLIENTA
+========================================================= */
+
+let supabase = null;
+
+try{
+
+  if(
+    !window.supabase ||
+    !window.supabase.createClient
+  ){
+
+    throw new Error(
+      'Supabase knihovna se nenačetla.'
+    );
+
+  }
+
+  supabase =
+    window.supabase.createClient(
+      HOLLEN_SUPABASE_URL,
+      HOLLEN_SUPABASE_KEY
+    );
+
+}
+catch(error){
+
+  console.error(
+    'SUPABASE INIT ERROR:',
+    error
   );
+
+}
 
 
 /* =========================================================
@@ -1175,7 +1098,7 @@ function msg(text){
 
     toast.classList.remove('show');
 
-  }, 2800);
+  },2800);
 
 }
 
@@ -1219,18 +1142,22 @@ $('labelInput').addEventListener(
   'change',
   async e => {
 
-    const file = e.target.files[0];
+    const file =
+      e.target.files[0];
 
     if(!file) return;
 
     labelFile = file;
 
-    label = URL.createObjectURL(file);
+    label =
+      URL.createObjectURL(file);
 
     $('labelPrev').innerHTML =
-      '<img src="' + label + '">';
+      '<img src="' + label + '" alt="Štítek">';
 
-    $('toDefects').classList.remove('hidden');
+    $('toDefects')
+      .classList
+      .remove('hidden');
 
     e.target.value = '';
 
@@ -1244,9 +1171,13 @@ $('labelInput').addEventListener(
 
 function goDefects(){
 
-  $('opLabel').classList.add('hidden');
+  $('opLabel')
+    .classList
+    .add('hidden');
 
-  $('opDefects').classList.remove('hidden');
+  $('opDefects')
+    .classList
+    .remove('hidden');
 
 }
 
@@ -1290,15 +1221,18 @@ $('defectInput').addEventListener(
 function renderDefects(){
 
   $('defCount').textContent =
-    'Vyfoceno: ' + defects.length;
+    'Vyfoceno: ' +
+    defects.length;
 
   $('defGallery').innerHTML =
-    defects.map((item,index) =>
+    defects.map((item,index) => `
 
-      `
       <div class="thumb">
 
-        <img src="${item.preview}">
+        <img
+          src="${item.preview}"
+          alt="Vada ${index + 1}"
+        >
 
         <b
           onclick="removeDef(${index})"
@@ -1307,9 +1241,8 @@ function renderDefects(){
         </b>
 
       </div>
-      `
 
-    ).join('');
+    `).join('');
 
 }
 
@@ -1335,8 +1268,12 @@ async function uploadPhoto(
 ){
 
   const extension =
-    (file.name.split('.').pop() || 'jpg')
-      .toLowerCase();
+    (
+      file.name
+        .split('.')
+        .pop() ||
+      'jpg'
+    ).toLowerCase();
 
   const fileName =
     recordId +
@@ -1350,21 +1287,21 @@ async function uploadPhoto(
     extension;
 
 
-  const {
-    error
-  } = await supabase
-    .storage
-    .from('defect-photos')
-    .upload(
-      fileName,
-      file,
-      {
-        contentType:
-          file.type || 'image/jpeg',
-        upsert:false
-      }
-    );
+  const {error} =
+    await supabase
+      .storage
+      .from('defect-photos')
+      .upload(
+        fileName,
+        file,
+        {
+          contentType:
+            file.type ||
+            'image/jpeg',
 
+          upsert:false
+        }
+      );
 
   if(error){
 
@@ -1372,14 +1309,11 @@ async function uploadPhoto(
 
   }
 
-
-  const {
-    data
-  } = supabase
-    .storage
-    .from('defect-photos')
-    .getPublicUrl(fileName);
-
+  const {data} =
+    supabase
+      .storage
+      .from('defect-photos')
+      .getPublicUrl(fileName);
 
   return {
 
@@ -1408,48 +1342,48 @@ async function finishSet(){
 
   }
 
+  if(!supabase){
+
+    msg(
+      '❌ Supabase není správně připojen.'
+    );
+
+    return;
+
+  }
 
   try{
 
     const recordId =
       crypto.randomUUID();
 
-
     msg(
       '☁ Vytvářím záznam…'
     );
 
 
-    /* vytvoření záznamu v databázi */
-
     const {
-
       data:record,
-
       error:recordError
+    } =
+      await supabase
+        .from('parts')
+        .insert({
 
-    } = await supabase
+          part_number:
+            'HOLLEN-' +
+            recordId.slice(0,8),
 
-      .from('parts')
+          description:
+            'Evidence vad',
 
-      .insert({
+          operator:null,
 
-        part_number:
-          'HOLLEN-' +
-          recordId.slice(0,8),
+          defect_type:null
 
-        description:
-          'Evidence vad',
-
-        operator:null,
-
-        defect_type:null
-
-      })
-
-      .select()
-
-      .single();
+        })
+        .select()
+        .single();
 
 
     if(recordError){
@@ -1463,36 +1397,23 @@ async function finishSet(){
       record.id;
 
 
-    /* UPLOAD ŠTÍTKU */
-
     msg(
       '☁ Nahrávám štítek…'
     );
 
 
     await uploadPhoto(
-
       labelFile,
-
       dbRecordId,
-
       'label',
-
       1
-
     );
 
 
-    /* UPLOAD VAD */
-
     for(
-
       let i = 0;
-
       i < defects.length;
-
       i++
-
     ){
 
       msg(
@@ -1503,17 +1424,11 @@ async function finishSet(){
         '…'
       );
 
-
       await uploadPhoto(
-
         defects[i].file,
-
         dbRecordId,
-
         'defect',
-
         i + 1
-
       );
 
     }
@@ -1530,7 +1445,6 @@ async function finishSet(){
     $('opDefects')
       .classList
       .add('hidden');
-
 
     $('opStart')
       .classList
@@ -1552,7 +1466,6 @@ async function finishSet(){
       error
     );
 
-
     msg(
       '❌ Chyba: ' +
       (
@@ -1572,26 +1485,29 @@ async function finishSet(){
 
 async function refreshCloudData(){
 
+  if(!supabase){
+
+    throw new Error(
+      'Supabase klient nebyl vytvořen.'
+    );
+
+  }
+
   try{
 
     const {
-
       data:records,
-
       error
-
-    } = await supabase
-
-      .from('parts')
-
-      .select('*')
-
-      .order(
-        'created_at',
-        {
-          ascending:false
-        }
-      );
+    } =
+      await supabase
+        .from('parts')
+        .select('*')
+        .order(
+          'created_at',
+          {
+            ascending:false
+          }
+        );
 
 
     if(error){
@@ -1605,30 +1521,23 @@ async function refreshCloudData(){
 
 
     for(
-
       const record of records
-
     ){
 
       const {
-
         data:files,
-
         error:fileError
-
-      } = await supabase
-
-        .storage
-
-        .from('defect-photos')
-
-        .list(
-          record.id,
-          {
-            limit:100,
-            offset:0
-          }
-        );
+      } =
+        await supabase
+          .storage
+          .from('defect-photos')
+          .list(
+            record.id,
+            {
+              limit:100,
+              offset:0
+            }
+          );
 
 
       if(fileError){
@@ -1643,62 +1552,55 @@ async function refreshCloudData(){
 
       const photos =
         (files || [])
-        .map(file => {
+          .map(file => {
 
-          const {
+            const {data} =
+              supabase
+                .storage
+                .from('defect-photos')
+                .getPublicUrl(
+                  record.id +
+                  '/' +
+                  file.name
+                );
 
-            data
+            return {
 
-          } = supabase
+              name:file.name,
 
-            .storage
+              url:data.publicUrl
 
-            .from('defect-photos')
+            };
 
-            .getPublicUrl(
-
-              record.id +
-              '/' +
-              file.name
-
-            );
-
-
-          return {
-
-            name:file.name,
-
-            url:data.publicUrl
-
-          };
-
-        });
+          });
 
 
       const labelPhoto =
         photos.find(
           photo =>
-            photo.name.startsWith('label_')
+            photo.name.startsWith(
+              'label_'
+            )
         );
 
 
       const defectPhotos =
         photos
-
           .filter(
             photo =>
-              photo.name.startsWith('defect_')
+              photo.name.startsWith(
+                'defect_'
+              )
           )
-
           .sort(
             (a,b) =>
               a.name.localeCompare(
                 b.name
               )
           )
-
           .map(
-            photo => photo.url
+            photo =>
+              photo.url
           );
 
 
@@ -1737,6 +1639,9 @@ async function refreshCloudData(){
       '☁ ONLINE';
 
 
+    return result;
+
+
   }
   catch(error){
 
@@ -1745,10 +1650,8 @@ async function refreshCloudData(){
       error
     );
 
-
     $('status').textContent =
       '⚠ OFFLINE';
-
 
     throw error;
 
@@ -1766,17 +1669,13 @@ function renderRecords(data){
   const el =
     $('records');
 
-
   if(!data.length){
 
-    el.innerHTML =
-      `
+    el.innerHTML = `
       <div class="empty">
-
         Zatím žádné uložené záznamy.
-
       </div>
-      `;
+    `;
 
     return;
 
@@ -1798,114 +1697,109 @@ function renderRecords(data){
 
       return `
 
-      <div class="recordCard">
+        <div class="recordCard">
 
-        <div class="recordTop">
+          <div class="recordTop">
 
-          ${
-            photo
+            ${
+              photo
 
-            ?
+              ?
 
-            `
-            <img
-              class="cover"
-              src="${photo}"
-              onclick="
-                event.stopPropagation();
-                openViewer(
-                  '${photo}',
-                  'Štítek'
-                )
-              "
-            >
-            `
+              `
+              <img
+                class="cover"
+                src="${photo}"
+                alt="Štítek"
+                onclick="
+                  event.stopPropagation();
+                  openViewer(
+                    '${photo}',
+                    'Štítek'
+                  )
+                "
+              >
+              `
 
-            :
+              :
 
-            `
-            <div
-              class="cover"
-              style="
-                display:grid;
-                place-items:center;
-              "
-            >
-              📷
-            </div>
-            `
+              `
+              <div
+                class="cover"
+                style="
+                  display:grid;
+                  place-items:center;
+                "
+              >
+                📷
+              </div>
+              `
 
-          }
-
-
-          <div class="meta">
-
-            <strong>
-
-              ${
-                record.part_number ||
-                'Díl'
-              }
-
-            </strong>
+            }
 
 
-            <small>
+            <div class="meta">
 
-              ${
-                new Date(
-                  record.created
-                ).toLocaleString(
-                  'cs-CZ'
-                )
-              }
-
-            </small>
+              <strong>
+                ${
+                  record.part_number ||
+                  'Díl'
+                }
+              </strong>
 
 
-            <div
-              style="margin-top:7px"
-            >
+              <small>
+                ${
+                  new Date(
+                    record.created
+                  ).toLocaleString(
+                    'cs-CZ'
+                  )
+                }
+              </small>
 
-              <span class="badge">
 
-                ${defectCount} vad
+              <div style="margin-top:7px">
 
-              </span>
+                <span class="badge">
+
+                  ${defectCount} vad
+
+                </span>
+
+              </div>
 
             </div>
 
           </div>
 
+
+          <div class="recordActions">
+
+            <button
+              onclick="
+                openRecord(
+                  '${record.id}'
+                )
+              "
+            >
+              👁 Detail
+            </button>
+
+
+            <button
+              onclick="
+                downloadSet(
+                  '${record.id}'
+                )
+              "
+            >
+              📦 Stáhnout sadu
+            </button>
+
+          </div>
+
         </div>
-
-
-        <div class="recordActions">
-
-          <button
-            onclick="
-              openRecord(
-                '${record.id}'
-              )
-            "
-          >
-            👁 Detail
-          </button>
-
-
-          <button
-            onclick="
-              downloadSet(
-                '${record.id}'
-              )
-            "
-          >
-            📦 Stáhnout sadu
-          </button>
-
-        </div>
-
-      </div>
 
       `;
 
@@ -1942,7 +1836,6 @@ function filterRecords(){
     current.filter(record => {
 
       const text =
-
         (
           record.id +
           ' ' +
@@ -1959,7 +1852,6 @@ function filterRecords(){
           ).toLocaleString(
             'cs-CZ'
           )
-
         )
         .toLowerCase();
 
@@ -1987,7 +1879,6 @@ async function refreshData(){
   msg(
     '☁ Načítám data…'
   );
-
 
   try{
 
@@ -2028,7 +1919,6 @@ function openRecord(id){
   const record =
     getRecord(id);
 
-
   if(!record){
 
     return;
@@ -2037,7 +1927,6 @@ function openRecord(id){
 
 
   const defectHtml =
-
     record.defects.length
 
     ?
@@ -2046,15 +1935,14 @@ function openRecord(id){
     <div class="detailGrid">
 
       ${
-
         record.defects.map(
-          (photo,index) =>
+          (photo,index) => `
 
-          `
           <div class="photoTile">
 
             <img
               src="${photo}"
+              alt="Vada ${index + 1}"
               onclick="
                 openViewer(
                   '${photo}',
@@ -2062,7 +1950,6 @@ function openRecord(id){
                 )
               "
             >
-
 
             <button
               class="actionBtn"
@@ -2077,10 +1964,9 @@ function openRecord(id){
             </button>
 
           </div>
+
           `
-
         ).join('')
-
       }
 
     </div>
@@ -2095,9 +1981,7 @@ function openRecord(id){
     `;
 
 
-  $('detail').innerHTML =
-
-    `
+  $('detail').innerHTML = `
 
     <p>
 
@@ -2111,8 +1995,7 @@ function openRecord(id){
         )
       }
 
-      <br>
-
+      <br><br>
 
       <b>ID:</b>
 
@@ -2161,6 +2044,7 @@ function openRecord(id){
         <img
           class="detailLabel"
           src="${record.label}"
+          alt="Štítek"
           onclick="
             openViewer(
               '${record.label}',
@@ -2199,7 +2083,7 @@ function openRecord(id){
 
     </div>
 
-    `;
+  `;
 
 
   $('modal')
@@ -2278,29 +2162,22 @@ async function downloadData(
     const response =
       await fetch(src);
 
-
     const blob =
       await response.blob();
-
 
     const url =
       URL.createObjectURL(blob);
 
-
     const link =
       document.createElement('a');
-
 
     link.href =
       url;
 
-
     link.download =
       name;
 
-
     link.click();
-
 
     setTimeout(
       () =>
@@ -2330,7 +2207,6 @@ async function downloadSet(id){
 
   const record =
     getRecord(id);
-
 
   if(!record){
 
@@ -2372,10 +2248,8 @@ async function downloadSet(id){
       const response =
         await fetch(src);
 
-
       const blob =
         await response.blob();
-
 
       zip.file(
         name,
@@ -2396,13 +2270,9 @@ async function downloadSet(id){
 
 
     for(
-
       let i = 0;
-
       i < record.defects.length;
-
       i++
-
     ){
 
       await addPhoto(
@@ -2452,9 +2322,7 @@ async function downloadSet(id){
 
     const blob =
       await zip.generateAsync({
-
         type:'blob'
-
       });
 
 
@@ -2473,12 +2341,9 @@ async function downloadSet(id){
 
 
     link.download =
-
       'HOLLEN_dil_' +
-
       record.id
         .slice(0,8) +
-
       '.zip';
 
 
@@ -2545,19 +2410,14 @@ async function downloadAllSets(){
   try{
 
     for(
-
       const record of current
-
     ){
 
       const folder =
         zip.folder(
-
           'dil_' +
-
           record.id
             .slice(0,8)
-
         );
 
 
@@ -2569,10 +2429,8 @@ async function downloadAllSets(){
         const response =
           await fetch(src);
 
-
         const blob =
           await response.blob();
-
 
         folder.file(
           name,
@@ -2593,13 +2451,9 @@ async function downloadAllSets(){
 
 
       for(
-
         let i = 0;
-
         i < record.defects.length;
-
         i++
-
       ){
 
         await addPhoto(
@@ -2624,9 +2478,7 @@ async function downloadAllSets(){
 
     const blob =
       await zip.generateAsync({
-
         type:'blob'
-
       });
 
 
@@ -2780,14 +2632,11 @@ async function exportCSV(){
 
     const blob =
       new Blob(
-
         [buffer],
-
         {
           type:
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
-
       );
 
 
@@ -3058,8 +2907,21 @@ async function initApp(){
 
   try{
 
+    if(!supabase){
+
+      throw new Error(
+        'Supabase klient nebyl vytvořen.'
+      );
+
+    }
+
+
     $('status').textContent =
       '☁ PŘIPOJUJI...';
+
+
+    $('cloudHint').textContent =
+      '☁ Připojuji aplikaci ke cloudové databázi…';
 
 
     await refreshCloudData();
@@ -3103,5 +2965,4 @@ initApp();
 </script>
 
 </body>
-
 </html>
