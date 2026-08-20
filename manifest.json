@@ -1,0 +1,23 @@
+{
+  "name": "HOLLEN Evidence vad",
+  "short_name": "Evidence vad",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef2f7",
+  "theme_color": "#213f68",
+  "icons": [
+    {
+      "src": "hollen-logo.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "hollen-logo.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ]
+}
