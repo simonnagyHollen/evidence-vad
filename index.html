@@ -1,0 +1,1467 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HOLLEN | Evidence vad</title>
+<link rel="icon" type="image/png" sizes="192x192" href="hollen-logo-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="hollen-logo-512.png">
+<link rel="apple-touch-icon" href="hollen-logo-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#213f68">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HOLLEN Evidence vad">
+
+<!-- Supabase JS v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+<style>
+:root{
+  --navy:#213f68;--blue:#31598c;--ink:#223249;--muted:#68758a;
+  --bg:#eef2f7;--card:#fff;--line:#d9e1eb;--danger:#b84a45;
+  --ok:#24734c;--shadow:0 18px 45px rgba(25,48,80,.13)
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input{font:inherit} button{cursor:pointer}
+.header{max-width:1120px;margin:0 auto;border-radius:0 0 34px 34px;padding:18px 32px 24px;background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;box-shadow:var(--shadow)}
+.headerTop{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.logoBox{width:205px;height:62px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logoBox img{max-width:90%;max-height:85%;object-fit:contain}
+h1{font-size:30px;margin:24px 0 4px}.sub{opacity:.78;margin:0}.cloud{margin-top:8px;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:9px 13px;font-size:13px}
+.tabs{display:flex;gap:10px;margin-top:20px}.tab{border:0;border-radius:16px;padding:15px 22px;font-weight:800;background:rgba(255,255,255,.12);color:#fff}.tab.active{background:#fff;color:var(--navy)}
+main{max-width:1120px;margin:30px auto;padding:0 20px 60px}.notice{max-width:790px;margin:0 auto 16px;padding:14px 18px;border:1px solid #b9dbc9;background:#eff8f3;color:#236444;border-radius:16px}
+.view{display:none}.view.active{display:block}.card{max-width:790px;margin:0 auto 20px;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:26px;padding:22px;box-shadow:0 12px 32px rgba(25,48,80,.08)}
+.hero{text-align:center;padding:50px 24px}.camera{font-size:56px}.hero h2{font-size:26px}.hero p{color:var(--muted);line-height:1.5}
+.primary{width:100%;border:0;border-radius:20px;background:var(--navy);color:#fff;padding:20px;font-size:21px;font-weight:900;box-shadow:0 10px 24px rgba(31,62,104,.24)}
+.secondary,.danger,.tool{border:1px solid var(--line);background:#fff;color:#30445f;border-radius:15px;padding:13px 18px;font-weight:800}.danger{color:var(--danger);border-color:#efcbc8}.danger:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1}.field{width:100%;padding:15px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.stageTitle{display:flex;justify-content:space-between;align-items:center}.badge{padding:8px 12px;border-radius:999px;background:#e9eff7;font-weight:800;color:var(--navy)}
+.previewGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:18px 0}.preview{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#f6f8fb}.preview img{width:100%;height:120px;object-fit:cover;display:block}.preview small{display:block;padding:7px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.removePreview{position:absolute;right:6px;top:6px;border:0;border-radius:50%;width:28px;height:28px;background:#fff;color:var(--danger);font-weight:900}
+.drop{display:block;border:2px dashed #b7c5d8;border-radius:18px;padding:28px;text-align:center;color:var(--muted);margin:12px 0}.drop input{display:none}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.search{width:100%;padding:16px 18px;border:1px solid var(--line);border-radius:17px;font-size:17px}
+.adminHead{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.adminHead p{color:var(--muted);line-height:1.5}
+.listCard{max-width:1120px}.part{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:22px;padding:14px;margin-top:12px;background:#fff}.check{width:24px;height:24px;flex:0 0 auto}.thumb{width:100px;height:100px;border-radius:16px;object-fit:cover;background:#edf1f5}.partBody{min-width:0;flex:1}.partName{font-size:18px;font-weight:900}
+.adminToolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.adminToolbar .tool,.adminToolbar .danger{white-space:nowrap}
+.adminStats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.stat{background:#f5f8fc;border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+.stat b{font-size:18px;margin-right:5px}
+.galleryItem{border:1px solid var(--line);border-radius:16px;padding:8px;background:#fff}
+.galleryItem img{width:100%;height:190px;object-fit:cover;border-radius:11px;display:block;cursor:zoom-in}
+.galleryMeta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.galleryMeta small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.galleryActions{display:flex;gap:6px;margin-top:7px}
+.galleryActions button{flex:1;padding:9px 8px;font-size:12px}
+.photoViewer{
+  position:fixed;
+  inset:0;
+  background:rgba(7,16,29,.97);
+  display:none;
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+  padding:78px 88px 58px;
+  overflow:hidden;
+}
+.photoViewer.show{display:flex}
+.viewerStage{
+  position:absolute;
+  left:0;
+  right:0;
+  top:68px;
+  bottom:48px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
+  touch-action:none;
+}
+.photoViewerImg{
+  display:block;
+  max-width:calc(100vw - 176px);
+  max-height:calc(100vh - 126px);
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:12px;
+  box-shadow:0 12px 45px rgba(0,0,0,.5);
+  user-select:none;
+  -webkit-user-drag:none;
+  cursor:grab;
+  transform-origin:center center;
+  will-change:transform;
+  position:relative;
+  z-index:2;
+}
+.photoViewerImg.dragging{cursor:grabbing}
+.viewerTop{
+  position:absolute;
+  top:12px;
+  left:18px;
+  right:18px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  color:#fff;
+  z-index:20;
+}
+.viewerTitle{
+  font-weight:900;
+  font-size:16px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:42vw;
+}
+.viewerControls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.viewerBtn{
+  border:0;
+  border-radius:12px;
+  padding:10px 13px;
+  background:#fff;
+  color:#23344c;
+  font-weight:800;
+  box-shadow:0 4px 15px rgba(0,0,0,.18);
+  position:relative;
+  z-index:21;
+  pointer-events:auto;
+}
+.viewerNav{
+  position:absolute;
+  left:14px;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  justify-content:space-between;
+  pointer-events:none;
+  z-index:15;
+}
+.viewerArrow{
+  pointer-events:auto;
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:50%;
+  background:#ffffffea;
+  color:#223249;
+  font-size:28px;
+  font-weight:900;
+  box-shadow:0 4px 15px rgba(0,0,0,.18);
+}
+.viewerBottom{
+  position:absolute;
+  bottom:12px;
+  left:20px;
+  right:20px;
+  text-align:center;
+  color:#fff;
+  font-size:13px;
+  z-index:20;
+}
+
+.adminLayout{max-width:1120px;margin:0 auto}
+.partMeta{color:var(--muted);font-size:14px;margin:6px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{padding:10px 13px}
+.empty{text-align:center;color:var(--muted);padding:35px}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1e2e43;color:#fff;padding:16px 22px;border-radius:999px;box-shadow:var(--shadow);z-index:50;display:none}.toast.show{display:block}
+.loading{display:inline-block;width:18px;height:18px;border:3px solid #dbe3ee;border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-4px}@keyframes spin{to{transform:rotate(360deg)}}
+.modal{position:fixed;inset:0;background:rgba(12,25,42,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}.modal.show{display:flex}.modalBox{max-width:560px;width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:var(--shadow)}.modalGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;max-height:60vh;overflow:auto}.modalGrid img{width:100%;border-radius:12px}
+.ocrBox{max-width:760px}
+.ocrStatus{margin-top:10px;padding:11px 13px;border-radius:12px;background:#f4f7fb;color:var(--muted);font-size:13px}
+.ocrText{min-height:220px;max-height:55vh;overflow:auto;margin:12px 0 0;padding:16px;background:#f7f9fc;border:1px solid var(--line);border-radius:14px;white-space:pre-wrap;word-break:break-word;font:14px/1.55 "SFMono-Regular",Consolas,monospace;color:var(--ink)}
+
+@media(max-width:650px){.photoViewer{padding:70px 12px 54px}
+.viewerStage{top:64px;bottom:44px}
+.photoViewerImg{max-width:calc(100vw - 24px);max-height:calc(100vh - 120px)}
+.viewerTitle{max-width:35vw;font-size:13px}
+.viewerBtn{padding:8px 9px;font-size:12px}
+.viewerArrow{width:44px;height:44px}
+.header{padding:15px 18px 22px;border-radius:0 0 26px 26px}.logoBox{width:160px;height:55px}h1{font-size:26px}.cloud{font-size:11px}.part{align-items:flex-start}.thumb{width:75px;height:75px}.actions{margin-top:8px}.row>*{flex:100%}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="headerTop">
+    <div>
+      <div class="logoBox"><img src="hollen-logo-exact.jpg" alt="HOLLEN"></div>
+      <h1>Evidence vad</h1>
+      <p class="sub">Operátor jednoduše fotí. Admin má kompletní přehled.</p>
+    </div>
+    <div id="cloudStatus" class="cloud">☁️ STARTUJI...</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-view="operator">📱 Operátor</button>
+    <button class="tab" data-view="admin">🖥️ Admin</button>
+  </div>
+</header>
+
+<main>
+  <section id="operator" class="view active">
+    <div id="opStart" class="card hero">
+      <div class="camera">📷</div>
+      <h2>Připraven na další díl?</h2>
+      <p>Nejdříve vyfoť štítek. Potom jednoduše přidej všechny fotografie vad.</p>
+      <button id="newPartBtn" class="primary">NOVÝ DÍL</button>
+    </div>
+
+    <div id="opLabel" class="card" hidden>
+      <div class="stageTitle">
+        <h2>1. Vyfoť štítek dílu</h2>
+        <span class="badge">1 foto</span>
+      </div>
+      <p style="color:var(--muted)">Fotografie štítku identifikuje celou sadu.</p>
+      <label class="drop">📷 <strong>OTEVŘÍT FOTOAPARÁT</strong><br><small>Vyfoť štítek dílu</small>
+        <input id="labelInput" type="file" accept="image/*" capture="environment">
+      </label>
+      <div id="labelPreview" class="previewGrid"></div>
+      <button id="toDefectsBtn" class="secondary" style="width:100%" hidden>POKRAČOVAT →</button>
+    </div>
+
+    <div id="opDefects" class="card" hidden>
+      <div class="stageTitle">
+        <h2>2. Vyfoť vady</h2>
+        <span class="badge" id="photoCount">0 vad</span>
+      </div>
+      <p style="color:var(--muted)">Fotografuj jednu vadu po druhé. Až budeš hotový, ulož celou sadu.</p>
+      <label class="drop">📸 <strong>VYFOTIT VADU</strong><br><small>Přidá jednu fotografii do sady</small>
+        <input id="defectInput" type="file" accept="image/*" capture="environment">
+      </label>
+      <div id="previewGrid" class="previewGrid"></div>
+      <button id="savePartBtn" class="primary" style="width:100%">✓ HOTOVO – ULOŽIT DÍL</button>
+    </div>
+  </section>
+
+  <section id="admin" class="view">
+  <div class="adminLayout">
+    <div class="notice">☁️ <span id="adminNotice">Aplikace je připravena. Záznamy se načtou po otevření Adminu.</span></div>
+
+    <div class="card">
+      <div class="adminHead">
+        <div>
+          <h2>Admin přehled</h2>
+          <p>Správa nafocených dílů. Fotografie můžeš prohlížet, stahovat jednotlivě, stáhnout celý díl jako ZIP nebo jednotlivé fotografie trvale mazat.</p>
+        </div>
+        <span class="badge">ADMIN</span>
+      </div>
+
+      <div class="adminStats">
+        <div class="stat"><b id="statParts">0</b> dílů</div>
+        <div class="stat"><b id="statPhotos">0</b> fotek</div>
+        <div class="stat"><b id="statSelected">0</b> označeno</div>
+      </div>
+
+      <input id="searchInput" class="search" placeholder="🔎 Hledat podle ID, data nebo čísla dílu...">
+
+      <div class="adminToolbar">
+        <button id="refreshBtn" class="tool">↻ Obnovit</button>
+        <button id="selectAllBtn" class="tool">☑ Označit vše</button>
+        <button id="downloadSelectedBtn" class="tool">📦 Stáhnout označené ZIP</button>
+        <button id="excelBtn" class="tool">⬇ CSV</button>
+        <button id="deleteSelectedBtn" class="danger" disabled>🗑 Smazat označené (0)</button>
+      </div>
+    </div>
+
+    <div class="card listCard">
+      <h2>📋 Nafocené díly</h2>
+      <div id="partsList"><div class="empty">Otevři Admin pro načtení záznamů.</div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div id="toast" class="toast"></div>
+<div id="ocrModal" class="modal">
+  <div class="modalBox ocrBox">
+    <div class="stageTitle">
+      <h2>🔤 Informace ze štítku</h2>
+      <button id="ocrClose" class="secondary">Zavřít</button>
+    </div>
+    <div id="ocrStatus" class="ocrStatus">Připraveno.</div>
+    <pre id="ocrText" class="ocrText"></pre>
+    <div class="toolbar" style="margin-top:14px">
+      <button id="ocrCopy" class="tool" disabled>📋 Kopírovat text</button>
+      <button id="ocrAgain" class="tool">🔄 Rozpoznat znovu</button>
+    </div>
+  </div>
+</div>
+
+<div id="galleryModal" class="modal"><div class="modalBox"><div class="stageTitle"><h2 id="galleryTitle">Fotografie</h2><button id="closeGallery" class="secondary">Zavřít</button></div><div id="galleryGrid" class="modalGrid"></div></div></div>
+<div id="photoViewer" class="photoViewer">
+  <div class="viewerTop">
+    <div id="viewerTitle" class="viewerTitle">Fotografie</div>
+    <div class="viewerControls">
+      <button id="viewerZoomOut" class="viewerBtn">−</button>
+      <button id="viewerZoomReset" class="viewerBtn">100 %</button>
+      <button id="viewerZoomIn" class="viewerBtn">+</button>
+      <button id="viewerDownload" class="viewerBtn">⬇ Stáhnout</button>
+      <button id="viewerClose" class="viewerBtn">✕ Zavřít</button>
+    </div>
+  </div>
+  <div class="viewerNav">
+    <button id="viewerPrev" class="viewerArrow">‹</button>
+    <button id="viewerNext" class="viewerArrow">›</button>
+  </div>
+  <div id="viewerStage" class="viewerStage">
+    <img id="viewerImg" class="photoViewerImg" alt="">
+  </div>
+  <div id="viewerBottom" class="viewerBottom"></div>
+</div>
+
+<script>
+/* =========================================================
+   HOLLEN – Evidence vad
+   DŮLEŽITÉ: vlož sem STEJNÉ údaje, které jsi měl ve funkční verzi.
+   Klient se jmenuje DB, nikdy "supabase" – tím se odstraní konflikt
+   "supabase.from is not a function" i "already declared".
+   ========================================================= */
+
+const SUPABASE_URL = "VLOZ_SEM_SVOJI_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "VLOZ_SEM_SVOJI_SUPABASE_ANON_KEY";
+const TABLE_NAME = "parts";
+const BUCKET_NAME = "defect-photos";
+
+let db = null;
+let pendingPhotos = [];
+let allParts = [];
+let selectedIds = new Set();
+
+const $ = id => document.getElementById(id);
+function toast(msg, ms=3200){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(window.__toast); window.__toast=setTimeout(()=>t.classList.remove("show"),ms); }
+function setCloud(text, ok=true){ $("cloudStatus").textContent=text; $("cloudStatus").style.opacity=ok?"1":".8"; }
+
+function safeName(name){
+  return String(name || "photo.jpg").replace(/[^a-zA-Z0-9._-]/g,"_");
+}
+function escapeHtml(v){ return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+function formatDate(v){ try{return new Date(v).toLocaleString("cs-CZ");}catch{return v||"";} }
+
+async function compressImage(file){
+  if(!file.type.startsWith("image/")) return file;
+  try{
+    const bitmap = await createImageBitmap(file);
+    const max = 1600;
+    let w=bitmap.width,h=bitmap.height;
+    if(Math.max(w,h)>max){ const r=max/Math.max(w,h); w=Math.round(w*r); h=Math.round(h*r); }
+    const canvas=document.createElement("canvas"); canvas.width=w; canvas.height=h;
+    const ctx=canvas.getContext("2d"); ctx.drawImage(bitmap,0,0,w,h);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",.62));
+    bitmap.close?.();
+    return new File([blob || file], safeName(file.name).replace(/\.[^.]+$/,"")+".jpg",{type:"image/jpeg"});
+  }catch(e){ return file; }
+}
+
+async function initSupabase(){
+  try{
+    if(!window.supabase || typeof window.supabase.createClient !== "function") throw new Error("Supabase knihovna se nenačetla");
+    if(SUPABASE_URL.includes("VLOZ_SEM") || SUPABASE_ANON_KEY.includes("VLOZ_SEM")) throw new Error("Nejsou vyplněné Supabase údaje");
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    if(typeof db.from !== "function") throw new Error("Supabase klient nebyl vytvořen správně");
+    const { error } = await db.from(TABLE_NAME).select("id").limit(1);
+    if(error) throw error;
+    setCloud("☁️ CLOUD ONLINE");
+  }catch(err){
+    console.error(err);
+    setCloud("⚠ CLOUD NEDOSTUPNÝ",false);
+    toast("⚠ " + (err.message || "Supabase není dostupný"),5000);
+  }
+}
+
+function switchView(name){
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===name));
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
+  if(name==="admin") loadParts();
+}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchView(b.dataset.view)));
+
+function resetOperator(){
+  pendingLabel = null;
+  pendingPhotos = [];
+  $("labelInput").value="";
+  $("defectInput").value="";
+  $("labelPreview").innerHTML="";
+  $("previewGrid").innerHTML="";
+  $("photoCount").textContent="0 vad";
+  $("toDefectsBtn").hidden=true;
+  $("opStart").hidden=false;
+  $("opLabel").hidden=true;
+  $("opDefects").hidden=true;
+}
+
+let pendingLabel = null;
+
+function showLabelPreview(file){
+  const url=URL.createObjectURL(file);
+  $("labelPreview").innerHTML=`<div class="preview"><img src="${url}" alt="Štítek"><small>Štítek dílu</small></div>`;
+}
+
+function renderDefectPreviews(){
+  $("photoCount").textContent=`${pendingPhotos.length} ${pendingPhotos.length===1?"vada":"vad"}`;
+  $("previewGrid").innerHTML=pendingPhotos.map((f,i)=>{
+    const url=URL.createObjectURL(f);
+    return `<div class="preview"><img src="${url}" alt="Vada ${i+1}"><button class="removePreview" data-i="${i}">×</button><small>Vada ${i+1}</small></div>`;
+  }).join("");
+  document.querySelectorAll(".removePreview").forEach(b=>b.onclick=()=>{
+    pendingPhotos.splice(Number(b.dataset.i),1);
+    renderDefectPreviews();
+  });
+}
+
+$("newPartBtn").onclick=()=>{
+  pendingLabel=null;
+  pendingPhotos=[];
+  $("opStart").hidden=true;
+  $("opLabel").hidden=false;
+  $("opDefects").hidden=true;
+  $("labelPreview").innerHTML="";
+  $("previewGrid").innerHTML="";
+  $("toDefectsBtn").hidden=true;
+  $("photoCount").textContent="0 vad";
+};
+
+$("labelInput").addEventListener("change",async e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  toast("🗜️ Silněji komprimuji štítek...");
+  pendingLabel=await compressImage(file);
+  showLabelPreview(pendingLabel);
+  $("toDefectsBtn").hidden=false;
+  toast("✓ Štítek připraven.");
+  e.target.value="";
+});
+
+$("toDefectsBtn").onclick=()=>{
+  if(!pendingLabel){toast("Nejdřív vyfoť štítek.");return}
+  $("opLabel").hidden=true;
+  $("opDefects").hidden=false;
+};
+
+$("defectInput").addEventListener("change",async e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  toast("🗜️ Silněji komprimuji fotografii vady...");
+  const compressed=await compressImage(file);
+  pendingPhotos.push(compressed);
+  renderDefectPreviews();
+  toast("✓ Vada přidána.");
+  e.target.value="";
+});
+
+async function uploadOperatorPhoto(file,path,onProgress){
+  const {error}=await db.storage.from(BUCKET_NAME).upload(
+    path,
+    file,
+    {
+      contentType:file.type || "image/jpeg",
+      upsert:false
+    }
+  );
+  if(error) throw error;
+  if(onProgress) onProgress();
+}
+
+async function uploadOperatorBatch(items, concurrency=3){
+  let next=0;
+  let done=0;
+
+  async function worker(){
+    while(true){
+      const index=next++;
+      if(index>=items.length) return;
+
+      await uploadOperatorPhoto(
+        items[index].file,
+        items[index].path,
+        ()=>{
+          done++;
+          toast(`☁️ Nahrávám fotografie: ${done} / ${items.length}`);
+        }
+      );
+    }
+  }
+
+  const workers=[];
+  for(let i=0;i<Math.min(concurrency,items.length);i++){
+    workers.push(worker());
+  }
+  await Promise.all(workers);
+}
+
+$("savePartBtn").onclick=async()=>{
+  if(!db){ toast("⚠ Cloud není připojen."); return; }
+  if(!pendingLabel){ toast("⚠ Nejdřív vyfoť štítek."); return; }
+
+  const btn=$("savePartBtn");
+  btn.disabled=true;
+  btn.textContent="UKLÁDÁM...";
+
+  try{
+    const generatedPartNumber="HOLLEN-"+crypto.randomUUID().slice(0,8).toUpperCase();
+
+    const {data:part,error:insertError}=await db
+      .from(TABLE_NAME)
+      .insert({
+        part_number:generatedPartNumber,
+        description:"Evidence vad",
+        operator:null,
+        defect_type:null
+      })
+      .select()
+      .single();
+
+    if(insertError) throw insertError;
+
+    const stamp=Date.now();
+    const uploadItems=[
+      {
+        file:pendingLabel,
+        path:`${part.id}/label_${stamp}.jpg`
+      },
+      ...pendingPhotos.map((file,index)=>({
+        file,
+        path:`${part.id}/defect_${String(index+1).padStart(3,"0")}_${stamp+index}.jpg`
+      }))
+    ];
+
+    toast(`☁️ Nahrávám ${uploadItems.length} fotografií...`);
+
+    /* Fotografie se nahrávají paralelně ve 3 současných přenosech.
+       To je výrazně rychlejší než předchozí sériové nahrávání po jedné. */
+    await uploadOperatorBatch(uploadItems,3);
+
+    toast("✓ Celá sada byla uložena do cloudu.");
+    resetOperator();
+
+  }catch(err){
+    console.error(err);
+    toast("✕ Uložení selhalo: "+err.message,7000);
+  }finally{
+    btn.disabled=false;
+    btn.textContent="✓ HOTOVO – ULOŽIT DÍL";
+  }
+};
+
+async function getPartPhotos(partId){
+  const {data,error}=await db.storage.from(BUCKET_NAME).list(partId,{
+    limit:1000,
+    sortBy:{column:"name",order:"asc"}
+  });
+  if(error) throw error;
+
+  return (data||[])
+    .filter(x=>x.name)
+    .map(x=>{
+      const path=`${partId}/${x.name}`;
+      const {data:urlData}=db.storage.from(BUCKET_NAME).getPublicUrl(path);
+      const isLabel=/^label_/i.test(x.name);
+      return {
+        path,
+        url:urlData.publicUrl,
+        name:x.name,
+        kind:isLabel ? "Štítek" : "Vada"
+      };
+    })
+    .sort((a,b)=>{
+      if(a.kind!==b.kind) return a.kind==="Štítek" ? -1 : 1;
+      return a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:"base"});
+    });
+}
+
+async function loadParts(){
+  if(!db){$("partsList").innerHTML='<div class="empty">⚠ Cloud není připojen.</div>';return;}
+  $("adminNotice").innerHTML='<span class="loading"></span> Načítám záznamy...';
+  try{
+    const {data,error}=await db.from(TABLE_NAME).select("*").order("created_at",{ascending:false});
+    if(error) throw error;
+    allParts=data||[];
+    $("adminNotice").textContent=`☁️ Aplikace je online. Načteno záznamů: ${allParts.length}`;
+    renderParts();
+  }catch(err){console.error(err);$("adminNotice").textContent="⚠ Nepodařilo se načíst data.";toast("✕ Nepodařilo se načíst data: "+err.message,6000);}
+}
+
+function filteredParts(){
+  const q=$("searchInput").value.trim().toLowerCase();
+  return !q?allParts:allParts.filter(p=>[p.id,p.part_number,p.description,p.operator,p.defect_type,formatDate(p.created_at)].join(" ").toLowerCase().includes(q));
+}
+function updateDeleteButton(){
+  $("deleteSelectedBtn").textContent=`🗑 Smazat označené (${selectedIds.size})`;
+  $("deleteSelectedBtn").disabled=!selectedIds.size;
+}
+function renderParts(){
+  const parts=filteredParts();
+  $("statParts").textContent=parts.length;
+  const totalPhotos = parts.reduce((sum,p)=>sum + (Number(p.photoCount)||0),0);
+  $("statPhotos").textContent=totalPhotos;
+  $("statSelected").textContent=selectedIds.size;
+
+  if(!parts.length){
+    $("partsList").innerHTML='<div class="empty">Žádné záznamy.</div>';
+    updateDeleteButton();
+    return;
+  }
+
+  $("partsList").innerHTML=parts.map(p=>`
+    <div class="part">
+      <input class="check partCheck" type="checkbox" data-id="${p.id}" ${selectedIds.has(p.id)?"checked":""} aria-label="Označit díl">
+      <div class="thumb" id="thumb-${p.id}" style="display:flex;align-items:center;justify-content:center">📷</div>
+      <div class="partBody">
+        <div class="partName">${escapeHtml(p.part_number || "HOLLEN-"+p.id.slice(0,8))}</div>
+        <div class="partMeta">${formatDate(p.created_at)}</div>
+        <span class="badge" id="count-${p.id}">Načítám...</span>
+        <div class="actions">
+          <button class="tool detailBtn" data-id="${p.id}">👁 Fotografie</button>
+          <button class="tool ocrBtn" data-id="${p.id}">🔤 Informace ze štítku</button>
+          <button class="tool downloadBtn" data-id="${p.id}">📦 Stáhnout ZIP</button>
+          <button class="danger deleteBtn" data-id="${p.id}">🗑 Smazat díl</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".partCheck").forEach(c=>c.onchange=()=>{
+    c.checked?selectedIds.add(c.dataset.id):selectedIds.delete(c.dataset.id);
+    $("statSelected").textContent=selectedIds.size;
+    updateDeleteButton();
+  });
+  document.querySelectorAll(".detailBtn").forEach(b=>b.onclick=()=>openGallery(b.dataset.id));
+  document.querySelectorAll(".ocrBtn").forEach(b=>b.onclick=()=>openOCR(b.dataset.id));
+  document.querySelectorAll(".downloadBtn").forEach(b=>b.onclick=()=>downloadPartZip(b.dataset.id));
+  document.querySelectorAll(".deleteBtn").forEach(b=>b.onclick=()=>deletePart(b.dataset.id));
+
+  updateDeleteButton();
+
+  parts.forEach(async p=>{
+    try{
+      const photos=await getPartPhotos(p.id);
+      p.photoCount=photos.length;
+      const c=$("count-"+p.id);
+      if(c)c.textContent=`${photos.length} ${photos.length===1?"foto":"fotek"}`;
+      const th=$("thumb-"+p.id);
+      if(th && photos[0]) th.innerHTML=`<img class="thumb" src="${photos[0].url}" alt="">`;
+      $("statPhotos").textContent=filteredParts().reduce((sum,x)=>sum+(Number(x.photoCount)||0),0);
+    }catch(e){
+      const c=$("count-"+p.id);if(c)c.textContent="0 fotek";
+    }
+  });
+}
+
+let viewerPhotos=[];
+let viewerIndex=0;
+let viewerZoom=1;
+let viewerPanX=0;
+let viewerPanY=0;
+let viewerDragging=false;
+let viewerDragStartX=0;
+let viewerDragStartY=0;
+let viewerPanStartX=0;
+let viewerPanStartY=0;
+
+function clamp(value,min,max){ return Math.max(min,Math.min(max,value)); }
+
+function resetViewerTransform(){
+  viewerZoom=1;
+  viewerPanX=0;
+  viewerPanY=0;
+}
+
+function fitViewerPan(){
+  const stage=$("viewerStage");
+  const img=$("viewerImg");
+  if(!stage || !img) return;
+
+  const stageW=stage.clientWidth;
+  const stageH=stage.clientHeight;
+  const baseW=img.offsetWidth;
+  const baseH=img.offsetHeight;
+
+  if(!baseW || !baseH) return;
+
+  const scaledW=baseW*viewerZoom;
+  const scaledH=baseH*viewerZoom;
+
+  const maxX=Math.max(0,(scaledW-stageW)/2);
+  const maxY=Math.max(0,(scaledH-stageH)/2);
+
+  viewerPanX=clamp(viewerPanX,-maxX,maxX);
+  viewerPanY=clamp(viewerPanY,-maxY,maxY);
+}
+
+function applyViewerTransform(){
+  fitViewerPan();
+  $("viewerImg").style.transform=`translate3d(${viewerPanX}px,${viewerPanY}px,0) scale(${viewerZoom})`;
+  $("viewerZoomReset").textContent=Math.round(viewerZoom*100)+" %";
+}
+
+function openPhotoViewer(index){
+  viewerIndex=index;
+  resetViewerTransform();
+  renderPhotoViewer();
+  $("photoViewer").classList.add("show");
+}
+
+function closePhotoViewer(){
+  $("photoViewer").classList.remove("show");
+  $("viewerImg").classList.remove("dragging");
+  viewerDragging=false;
+}
+
+function renderPhotoViewer(){
+  if(!viewerPhotos.length) return;
+  const photo=viewerPhotos[viewerIndex];
+  const img=$("viewerImg");
+
+  img.src=photo.url;
+  img.alt=photo.name;
+  $("viewerTitle").textContent=photo.name;
+  $("viewerBottom").textContent=`${photo.kind} · ${viewerIndex+1} / ${viewerPhotos.length}`;
+  $("viewerPrev").disabled=viewerPhotos.length<2;
+  $("viewerNext").disabled=viewerPhotos.length<2;
+
+  img.onload=()=>{
+    fitViewerPan();
+    applyViewerTransform();
+  };
+  applyViewerTransform();
+}
+
+function viewerStep(delta){
+  if(!viewerPhotos.length) return;
+  viewerIndex=(viewerIndex+delta+viewerPhotos.length)%viewerPhotos.length;
+  resetViewerTransform();
+  renderPhotoViewer();
+}
+
+function zoomViewerAt(nextZoom, clientX=null, clientY=null){
+  const stage=$("viewerStage");
+  if(!stage) return;
+
+  const oldZoom=viewerZoom;
+  const newZoom=clamp(nextZoom,1,4);
+  if(newZoom===oldZoom) return;
+
+  if(clientX!==null && clientY!==null){
+    const rect=stage.getBoundingClientRect();
+    const sx=clientX-(rect.left+rect.width/2);
+    const sy=clientY-(rect.top+rect.height/2);
+    viewerPanX=sx-(sx-viewerPanX)*(newZoom/oldZoom);
+    viewerPanY=sy-(sy-viewerPanY)*(newZoom/oldZoom);
+  }
+
+  viewerZoom=newZoom;
+  if(viewerZoom===1){
+    viewerPanX=0;
+    viewerPanY=0;
+  }
+  applyViewerTransform();
+}
+
+$("viewerClose").onclick=closePhotoViewer;
+$("viewerPrev").onclick=()=>viewerStep(-1);
+$("viewerNext").onclick=()=>viewerStep(1);
+$("viewerZoomIn").onclick=()=>zoomViewerAt(viewerZoom+.25);
+$("viewerZoomOut").onclick=()=>zoomViewerAt(viewerZoom-.25);
+$("viewerZoomReset").onclick=()=>{resetViewerTransform();applyViewerTransform();};
+
+$("viewerStage").addEventListener("wheel",e=>{
+  if(!$("photoViewer").classList.contains("show")) return;
+  e.preventDefault();
+  const direction=e.deltaY<0 ? 1 : -1;
+  zoomViewerAt(viewerZoom + direction*.2,e.clientX,e.clientY);
+},{passive:false});
+
+$("viewerImg").addEventListener("pointerdown",e=>{
+  if(viewerZoom<=1) return;
+  viewerDragging=true;
+  viewerDragStartX=e.clientX;
+  viewerDragStartY=e.clientY;
+  viewerPanStartX=viewerPanX;
+  viewerPanStartY=viewerPanY;
+  $("viewerImg").classList.add("dragging");
+  $("viewerImg").setPointerCapture?.(e.pointerId);
+});
+
+$("viewerImg").addEventListener("pointermove",e=>{
+  if(!viewerDragging) return;
+  viewerPanX=viewerPanStartX+(e.clientX-viewerDragStartX);
+  viewerPanY=viewerPanStartY+(e.clientY-viewerDragStartY);
+  applyViewerTransform();
+});
+
+function endViewerDrag(e){
+  if(!viewerDragging) return;
+  viewerDragging=false;
+  $("viewerImg").classList.remove("dragging");
+  $("viewerImg").releasePointerCapture?.(e.pointerId);
+}
+$("viewerImg").addEventListener("pointerup",endViewerDrag);
+$("viewerImg").addEventListener("pointercancel",endViewerDrag);
+
+$("photoViewer").addEventListener("click",e=>{
+  if(e.target===$("photoViewer") || e.target===$("viewerStage")) closePhotoViewer();
+});
+
+document.addEventListener("keydown",e=>{
+  if(!$("photoViewer").classList.contains("show")) return;
+  if(e.key==="Escape") closePhotoViewer();
+  if(e.key==="ArrowLeft") viewerStep(-1);
+  if(e.key==="ArrowRight") viewerStep(1);
+  if(e.key==="+") zoomViewerAt(viewerZoom+.25);
+  if(e.key==="-") zoomViewerAt(viewerZoom-.25);
+});
+
+$("viewerDownload").onclick=async()=>{
+  if(!viewerPhotos.length) return;
+  const photo=viewerPhotos[viewerIndex];
+  await downloadPhoto(photo.url,photo.name);
+};
+
+window.addEventListener("resize",()=>{
+  if($("photoViewer").classList.contains("show")) applyViewerTransform();
+});
+
+
+let ocrPartId=null;
+let ocrLabelPhoto=null;
+let ocrRunToken=0;
+let ocrWorker=null;
+
+function setOCRStatus(message){
+  $("ocrStatus").textContent=message;
+}
+
+function showOCRModal(){
+  $("ocrModal").classList.add("show");
+}
+
+function closeOCRModal(){
+  ocrRunToken++;
+  $("ocrModal").classList.remove("show");
+}
+
+/* Načte jeden Tesseract worker a nechá ho v paměti.
+   První OCR je tím delší kvůli načtení modelu, další "Rozpoznat znovu"
+   už worker znovu nepřipravuje. */
+async function getOCRWorker(){
+  if(ocrWorker) return ocrWorker;
+
+  const Tesseract=await ensureTesseract();
+  ocrWorker=await Tesseract.createWorker(
+    "eng",
+    1,
+    {
+      logger: info=>{
+        if(!info || !info.status) return;
+        const pct=typeof info.progress==="number" ? " "+Math.round(info.progress*100)+" %" : "";
+        if(info.status==="recognizing text"){
+          setOCRStatus("🔎 Rozpoznávám text..."+pct);
+        }else if(info.status==="loading language traineddata"){
+          setOCRStatus("⏳ Načítám OCR model..."+pct);
+        }else{
+          setOCRStatus("⏳ "+info.status+pct);
+        }
+      }
+    }
+  );
+
+  const psm=(Tesseract.PSM && Tesseract.PSM.SPARSE_TEXT) || 11;
+  await ocrWorker.setParameters({
+    tessedit_pageseg_mode: psm,
+    preserve_interword_spaces: "1",
+    user_defined_dpi: "300"
+  });
+
+  return ocrWorker;
+}
+
+/* Lehká úprava obrázku:
+   - zachová celý štítek (žádný agresivní automatický ořez),
+   - převede obraz do šedi,
+   - mírně zvýší kontrast,
+   - případně obrázek zvětší, protože vyšší rozlišení často OCR pomůže.
+   Cíl je zlepšit čitelnost bez dlouhého zpracování. */
+async function prepareOCRImage(url){
+  const response=await fetch(url,{cache:"no-store"});
+  if(!response.ok) throw new Error("Štítek se nepodařilo načíst (HTTP "+response.status+").");
+  const blob=await response.blob();
+  const bitmap=await createImageBitmap(blob);
+
+  const sourceW=bitmap.width;
+  const sourceH=bitmap.height;
+  const targetMax=2200;
+  const scale=Math.min(1.45,targetMax/Math.max(sourceW,sourceH));
+  const w=Math.max(1,Math.round(sourceW*scale));
+  const h=Math.max(1,Math.round(sourceH*scale));
+
+  const canvas=document.createElement("canvas");
+  canvas.width=w;
+  canvas.height=h;
+
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality="high";
+  ctx.drawImage(bitmap,0,0,w,h);
+  bitmap.close?.();
+
+  const imageData=ctx.getImageData(0,0,w,h);
+  const px=imageData.data;
+
+  /* Kontrast 1.35 + grayscale. */
+  const contrast=1.35;
+  const intercept=128*(1-contrast);
+
+  for(let i=0;i<px.length;i+=4){
+    const gray=(0.299*px[i])+(0.587*px[i+1])+(0.114*px[i+2]);
+    const v=Math.max(0,Math.min(255,gray*contrast+intercept));
+    px[i]=v;
+    px[i+1]=v;
+    px[i+2]=v;
+  }
+
+  ctx.putImageData(imageData,0,0);
+
+  return await new Promise((resolve,reject)=>{
+    canvas.toBlob(
+      b=>b ? resolve(b) : reject(new Error("Nepodařilo se připravit obrázek pro OCR.")),
+      "image/jpeg",
+      0.9
+    );
+  });
+}
+
+/* Odstraní hlavně očividný OCR šum:
+   - řádky složené téměř jen ze speciálních znaků,
+   - řízení znaků,
+   - přebytečné prázdné řádky.
+   Obsah jinak nepřepisujeme ani "neopravujeme". */
+function cleanOCRText(raw){
+  const text=String(raw||"")
+    .replace(/\u0000/g,"")
+    .replace(/[\u0001-\u0008\u000B\u000C\u000E-\u001F\u007F]/g,"");
+
+  const lines=text.split(/\r?\n/).map(line=>line.replace(/[ \t]+/g," ").trim());
+
+  const cleaned=[];
+  for(const line of lines){
+    if(!line) {
+      if(cleaned.length && cleaned[cleaned.length-1]!=="") cleaned.push("");
+      continue;
+    }
+
+    const alnum=(line.match(/[A-Za-z0-9À-ž]/g)||[]).length;
+    const other=(line.match(/[^A-Za-z0-9À-ž\s]/g)||[]).length;
+
+    /* Vyhoď jen řádky, které jsou zjevně převážně OCR bordel.
+       Krátké kódy typu "Q56" nebo "B-06" zachováme. */
+    if(alnum===0) continue;
+    if(alnum<2 && other>2) continue;
+    if(alnum/(alnum+other) < 0.28 && other>=4) continue;
+
+    cleaned.push(line);
+  }
+
+  return cleaned.join("\n")
+    .replace(/\n{3,}/g,"\n\n")
+    .trim();
+}
+
+function ocrGarbageScore(raw){
+  const lines=String(raw||"").split(/\r?\n/).filter(Boolean);
+  if(!lines.length) return 1;
+  let bad=0;
+  for(const line of lines){
+    const alnum=(line.match(/[A-Za-z0-9À-ž]/g)||[]).length;
+    const other=(line.match(/[^A-Za-z0-9À-ž\s]/g)||[]).length;
+    if(alnum===0 || (alnum+other>5 && alnum/(alnum+other)<0.28)) bad++;
+  }
+  return bad/lines.length;
+}
+
+async function ensureTesseract(){
+  if(window.Tesseract) return window.Tesseract;
+
+  return new Promise((resolve,reject)=>{
+    const existing=document.querySelector('script[data-tesseract="1"]');
+    if(existing){
+      existing.addEventListener("load",()=>resolve(window.Tesseract));
+      existing.addEventListener("error",()=>reject(new Error("OCR knihovna se nepodařila načíst.")));
+      return;
+    }
+
+    const script=document.createElement("script");
+    script.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+    script.dataset.tesseract="1";
+    script.onload=()=>window.Tesseract ? resolve(window.Tesseract) : reject(new Error("OCR knihovna není dostupná."));
+    script.onerror=()=>reject(new Error("OCR knihovna se nepodařila načíst."));
+    document.head.appendChild(script);
+  });
+}
+
+async function openOCR(partId){
+  ocrPartId=partId;
+  ocrRunToken++;
+  const token=ocrRunToken;
+  $("ocrText").textContent="";
+  $("ocrCopy").disabled=true;
+  showOCRModal();
+  setOCRStatus("🔎 Hledám fotografii štítku...");
+
+  try{
+    const photos=await getPartPhotos(partId);
+    if(token!==ocrRunToken) return;
+
+    const label=photos.find(photo=>photo.kind==="Štítek") || photos.find(photo=>/^label_/i.test(photo.name));
+    if(!label){
+      setOCRStatus("⚠ Tento díl nemá rozpoznatelnou fotografii štítku.");
+      $("ocrText").textContent="";
+      return;
+    }
+
+    ocrLabelPhoto=label;
+    await runOCR(label,token);
+  }catch(err){
+    console.error("OCR chyba:",err);
+    if(token!==ocrRunToken) return;
+    setOCRStatus("✕ OCR se nepodařilo dokončit.");
+    $("ocrText").textContent=err.message || "Neznámá chyba";
+  }
+}
+
+async function runOCR(label,token){
+  $("ocrCopy").disabled=true;
+  $("ocrText").textContent="";
+  setOCRStatus("⏳ Připravuji fotografii...");
+
+  const worker=await getOCRWorker();
+  if(token!==ocrRunToken) return;
+
+  const prepared=await prepareOCRImage(label.url);
+  if(token!==ocrRunToken) return;
+
+  setOCRStatus("🔎 Rozpoznávám text ze štítku...");
+
+  const Tesseract=window.Tesseract;
+  const psmSparse=(Tesseract.PSM && Tesseract.PSM.SPARSE_TEXT) || 11;
+
+  await worker.setParameters({
+    tessedit_pageseg_mode: psmSparse,
+    preserve_interword_spaces: "1",
+    user_defined_dpi: "300"
+  });
+
+  let result=await worker.recognize(prepared);
+  let raw=result?.data?.text || "";
+  let cleaned=cleanOCRText(raw);
+
+  /* Druhý průchod jen tehdy, když první výsledek vypadá očividně špatně.
+     Tím běžný případ zůstane rychlý, ale složitější štítek dostane další šanci. */
+  const confidence=Number(result?.data?.confidence || 0);
+  const garbage=ocrGarbageScore(raw);
+
+  if(token!==ocrRunToken) return;
+
+  if((confidence<55 || garbage>0.30 || cleaned.length<8) && cleaned.length<2000){
+    setOCRStatus("🔎 Zkouším druhé rozpoznání...");
+    const psmAuto=(Tesseract.PSM && Tesseract.PSM.AUTO) || 3;
+    await worker.setParameters({
+      tessedit_pageseg_mode: psmAuto,
+      preserve_interword_spaces: "1",
+      user_defined_dpi: "300"
+    });
+
+    const second=await worker.recognize(prepared);
+    const secondRaw=second?.data?.text || "";
+    const secondClean=cleanOCRText(secondRaw);
+
+    const secondConfidence=Number(second?.data?.confidence || 0);
+    const secondGarbage=ocrGarbageScore(secondRaw);
+
+    /* Vyber lepší výsledek podle důvěry + menšího OCR šumu. */
+    const firstScore=confidence-(garbage*45)+Math.min(cleaned.length,500)/500*8;
+    const secondScore=secondConfidence-(secondGarbage*45)+Math.min(secondClean.length,500)/500*8;
+
+    if(secondClean && secondScore>firstScore){
+      raw=secondRaw;
+      cleaned=secondClean;
+    }
+
+    /* Vrať worker na rychlejší režim pro další použití. */
+    await worker.setParameters({
+      tessedit_pageseg_mode: psmSparse,
+      preserve_interword_spaces: "1",
+      user_defined_dpi: "300"
+    });
+  }
+
+  if(token!==ocrRunToken) return;
+
+  if(!cleaned){
+    setOCRStatus("⚠ OCR nenašlo žádný čitelný text.");
+    $("ocrText").textContent="";
+    $("ocrCopy").disabled=true;
+    return;
+  }
+
+  $("ocrText").textContent=cleaned;
+  $("ocrCopy").disabled=false;
+  setOCRStatus("✓ Text byl rozpoznán.");
+}
+
+$("ocrAgain").onclick=()=>{
+  if(!ocrPartId){
+    setOCRStatus("⚠ Není vybraný žádný díl.");
+    return;
+  }
+  ocrRunToken++;
+  const token=ocrRunToken;
+  $("ocrCopy").disabled=true;
+  $("ocrText").textContent="";
+  setOCRStatus("🔄 Spouštím nové rozpoznání...");
+
+  getPartPhotos(ocrPartId)
+    .then(photos=>{
+      if(token!==ocrRunToken) return;
+      const label=photos.find(photo=>photo.kind==="Štítek") || photos.find(photo=>/^label_/i.test(photo.name));
+      if(!label) throw new Error("Fotografie štítku nebyla nalezena.");
+      ocrLabelPhoto=label;
+      return runOCR(label,token);
+    })
+    .catch(err=>{
+      console.error(err);
+      if(token===ocrRunToken){
+        setOCRStatus("✕ OCR se nepodařilo dokončit.");
+        $("ocrText").textContent=err.message || "Neznámá chyba";
+      }
+    });
+};
+
+$("ocrCopy").onclick=async()=>{
+  const text=$("ocrText").textContent.trim();
+  if(!text) return;
+
+  try{
+    await navigator.clipboard.writeText(text);
+    toast("✓ Text zkopírován.");
+  }catch(err){
+    const area=document.createElement("textarea");
+    area.value=text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+    toast("✓ Text zkopírován.");
+  }
+};
+
+$("ocrClose").onclick=closeOCRModal;
+$("ocrModal").onclick=e=>{
+  if(e.target===$("ocrModal")) closeOCRModal();
+};
+document.addEventListener("keydown",e=>{
+  if(!$("ocrModal").classList.contains("show")) return;
+  if(e.key==="Escape") closeOCRModal();
+});
+
+async function openGallery(id){
+  try{
+    const p=allParts.find(x=>x.id===id);
+    const photos=await getPartPhotos(id);
+    viewerPhotos=photos;
+
+    $("galleryTitle").textContent=(p?.part_number || "Fotografie dílu") + " · " + photos.length + " fotek";
+
+    $("galleryGrid").innerHTML="";
+    if(!photos.length){
+      $("galleryGrid").innerHTML="<div class='empty'>Žádné fotografie.</div>";
+    }else{
+      photos.forEach((photo,index)=>{
+        const item=document.createElement("div");
+        item.className="galleryItem";
+
+        const img=document.createElement("img");
+        img.src=photo.url;
+        img.alt=photo.name;
+        img.onclick=()=>openPhotoViewer(index);
+
+        const meta=document.createElement("div");
+        meta.className="galleryMeta";
+        meta.innerHTML=`<span class="badge">${escapeHtml(photo.kind)}</span><small title="${escapeHtml(photo.name)}">${escapeHtml(photo.name)}</small>`;
+
+        const actions=document.createElement("div");
+        actions.className="galleryActions";
+
+        const dl=document.createElement("button");
+        dl.className="tool";
+        dl.textContent="⬇ Stáhnout";
+        dl.onclick=()=>downloadPhoto(photo.url,photo.name);
+
+        const del=document.createElement("button");
+        del.className="danger";
+        del.textContent="🗑 Smazat";
+        del.onclick=()=>deletePhoto(id,photo.path,photo.name);
+
+        actions.append(dl,del);
+        item.append(img,meta,actions);
+        $("galleryGrid").appendChild(item);
+      });
+    }
+
+    $("galleryModal").classList.add("show");
+  }catch(err){
+    console.error(err);
+    toast("✕ Fotografie nelze načíst: "+err.message,5000);
+  }
+}
+
+$("closeGallery").onclick=()=>$("galleryModal").classList.remove("show");
+$("galleryModal").onclick=e=>{if(e.target===$("galleryModal"))$("galleryModal").classList.remove("show");};
+
+async function downloadPhoto(url,name){
+  try{
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok) throw new Error("HTTP "+response.status);
+    const blob=await response.blob();
+    const objectUrl=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=objectUrl;
+    a.download=name || "foto.jpg";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(objectUrl),1500);
+    toast("✓ Fotografie stažena.");
+  }catch(err){
+    console.error(err);
+    /* fallback: open public file, useful on browsers that block blob downloads */
+    try{
+      const a=document.createElement("a");
+      a.href=url;
+      a.target="_blank";
+      a.rel="noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast("ℹ️ Fotografie byla otevřena v novém okně.");
+    }catch(_){
+      toast("✕ Stažení fotografie selhalo: "+err.message,5000);
+    }
+  }
+}
+
+async function deletePhoto(partId,path,name){
+  if(!confirm(`Opravdu trvale smazat fotografii "${name}"?\n\nTuto akci nelze vrátit.`)) return;
+
+  try{
+    const {error}=await db.storage.from(BUCKET_NAME).remove([path]);
+    if(error) throw error;
+
+    toast("✓ Fotografie byla trvale smazána.");
+    await openGallery(partId);
+    await loadParts();
+  }catch(err){
+    console.error(err);
+    toast("✕ Mazání fotografie selhalo: "+err.message,6000);
+  }
+}
+
+async function getZipBlobForPart(id){
+  const record=allParts.find(x=>x.id===id);
+  const photos=await getPartPhotos(id);
+  if(!photos.length) throw new Error("Díl nemá žádné fotografie.");
+  if(!window.JSZip) throw new Error("ZIP knihovna se nenačetla. Obnov stránku a zkus to znovu.");
+
+  const zip=new JSZip();
+  const folder=zip.folder(safeName(record?.part_number || ("HOLLEN_"+id.slice(0,8))));
+
+  for(let i=0;i<photos.length;i++){
+    const response=await fetch(photos[i].url,{cache:"no-store"});
+    if(!response.ok) throw new Error("Fotografii nelze načíst: "+photos[i].name+" (HTTP "+response.status+")");
+    const blob=await response.blob();
+    const prefix=photos[i].kind==="Štítek" ? "01_stitek_" : String(i).padStart(2,"0")+"_vada_";
+    folder.file(prefix+safeName(photos[i].name),blob);
+  }
+
+  folder.file("informace.txt",
+    "HOLLEN Evidence vad\n"+
+    "ID: "+(record?.id||id)+"\n"+
+    "Díl: "+(record?.part_number||"")+"\n"+
+    "Datum: "+formatDate(record?.created_at)+"\n"+
+    "Počet fotografií: "+photos.length
+  );
+
+  return await zip.generateAsync({
+    type:"blob",
+    compression:"DEFLATE",
+    compressionOptions:{level:6}
+  });
+}
+
+async function downloadPartZip(id){
+  try{
+    toast("📦 Připravuji ZIP celé sady...",5000);
+    const blob=await getZipBlobForPart(id);
+    const record=allParts.find(x=>x.id===id);
+    const objectUrl=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=objectUrl;
+    a.download="HOLLEN_"+safeName(record?.part_number || id.slice(0,8))+".zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(objectUrl),3000);
+    toast("✓ ZIP celé sady stažen.");
+  }catch(err){
+    console.error(err);
+    toast("✕ Stažení ZIP selhalo: "+err.message,7000);
+  }
+}
+
+async function downloadSelectedZip(){
+  const ids=[...selectedIds];
+  if(!ids.length){toast("Nejsou označeny žádné díly.");return;}
+  if(!window.JSZip){toast("ZIP knihovna se nenačetla. Obnov stránku a zkus to znovu.",5000);return;}
+
+  try{
+    toast(`📦 Připravuji ZIP pro ${ids.length} dílů...`,5000);
+    const zip=new JSZip();
+
+    for(let n=0;n<ids.length;n++){
+      const id=ids[n];
+      const record=allParts.find(x=>x.id===id);
+      const photos=await getPartPhotos(id);
+      const folder=zip.folder(safeName(record?.part_number || ("HOLLEN_"+id.slice(0,8))));
+
+      for(const photo of photos){
+        const response=await fetch(photo.url,{cache:"no-store"});
+        if(!response.ok) throw new Error("Fotografii nelze načíst: "+photo.name+" (HTTP "+response.status+")");
+        folder.file(safeName(photo.name),await response.blob());
+      }
+
+      folder.file("informace.txt",
+        "HOLLEN Evidence vad\n"+
+        "ID: "+id+"\n"+
+        "Díl: "+(record?.part_number||"")+"\n"+
+        "Datum: "+formatDate(record?.created_at)+"\n"+
+        "Počet fotografií: "+photos.length
+      );
+
+      toast(`📦 Připravuji ZIP: ${n+1}/${ids.length} dílů...`,5000);
+    }
+
+    const blob=await zip.generateAsync({
+      type:"blob",
+      compression:"DEFLATE",
+      compressionOptions:{level:6}
+    });
+
+    const objectUrl=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=objectUrl;
+    a.download="HOLLEN_oznacene_dily.zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(objectUrl),3500);
+    toast("✓ ZIP označených dílů stažen.");
+  }catch(err){
+    console.error(err);
+    toast("✕ Hromadné stažení ZIP selhalo: "+err.message,7000);
+  }
+}
+
+async function deletePart(id, silent=false){
+  if(!db) return false;
+  const part=allParts.find(p=>p.id===id);
+  if(!silent && !confirm(`Opravdu TRVALE smazat díl "${part?.part_number || id.slice(0,8)}" včetně všech fotografií z cloudu?`)) return false;
+  try{
+    const photos=await getPartPhotos(id);
+    if(photos.length){
+      const {error:storageError}=await db.storage.from(BUCKET_NAME).remove(photos.map(x=>x.path));
+      if(storageError) throw storageError;
+    }
+    const {error:dbError}=await db.from(TABLE_NAME).delete().eq("id",id);
+    if(dbError) throw dbError;
+
+    const {data:verifyRow,error:verifyError}=await db.from(TABLE_NAME).select("id").eq("id",id);
+    if(verifyError) throw verifyError;
+    if(verifyRow && verifyRow.length) throw new Error("Databázový záznam stále existuje.");
+
+    selectedIds.delete(id);
+    allParts=allParts.filter(p=>p.id!==id);
+    renderParts();
+    if(!silent) toast("✓ Díl i fotografie byly trvale smazány.");
+    return true;
+  }catch(err){console.error(err);toast("✕ Mazání selhalo: "+err.message,6000);return false;}
+}
+
+$("deleteSelectedBtn").onclick=async()=>{
+  const ids=[...selectedIds];if(!ids.length)return;
+  if(!confirm(`Opravdu TRVALE smazat ${ids.length} označených sad včetně všech fotografií z cloudu?`))return;
+  $("deleteSelectedBtn").disabled=true;
+  let ok=0;
+  for(const id of ids) if(await deletePart(id,true)) ok++;
+  selectedIds.clear();renderParts();toast(`✓ Úspěšně smazáno ${ok} sad.`);
+};
+$("selectAllBtn").onclick=()=>{const visible=filteredParts();const allSelected=visible.length&&visible.every(p=>selectedIds.has(p.id));visible.forEach(p=>allSelected?selectedIds.delete(p.id):selectedIds.add(p.id));renderParts();};
+$("refreshBtn").onclick=loadParts;
+$("searchInput").oninput=renderParts;
+
+$("downloadSelectedBtn").onclick=downloadSelectedZip;
+
+$("excelBtn").onclick=()=>{
+  const rows=filteredParts();const header=["ID","Vytvořeno","Číslo dílu","Popis","Operátor","Typ vady"];
+  const csv=[header,...rows.map(p=>[p.id,p.created_at,p.part_number,p.description,p.operator,p.defect_type])].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(";")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="evidence-vad.csv";a.click();URL.revokeObjectURL(a.href);
+};
+
+
+
+let adminAutoRefreshTimer=null;
+let adminRefreshBusy=false;
+
+async function autoRefreshAdmin(){
+  const adminView=document.getElementById("admin");
+  if(!adminView || !adminView.classList.contains("active")) return;
+  if(adminRefreshBusy) return;
+
+  adminRefreshBusy=true;
+  try{
+    await loadParts();
+  }catch(err){
+    console.error("Automatický refresh selhal:",err);
+  }finally{
+    adminRefreshBusy=false;
+  }
+}
+
+function startAdminAutoRefresh(){
+  if(adminAutoRefreshTimer) clearInterval(adminAutoRefreshTimer);
+  adminAutoRefreshTimer=setInterval(autoRefreshAdmin,60000);
+}
+
+startAdminAutoRefresh();
+
+window.addEventListener("focus",()=>{
+  const adminView=document.getElementById("admin");
+  if(adminView && adminView.classList.contains("active")) autoRefreshAdmin();
+});
+
+initSupabase();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
